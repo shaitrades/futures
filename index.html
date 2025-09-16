@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Futures Prop Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #121212;
+      color: white;
+    }
+    .container {
+      max-width: 420px;
+      margin: auto;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 12px 0;
+    }
+    .row label {
+      flex: 1;
+    }
+    .row input {
+      flex: 2;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      text-align: right;
+    }
+    .output {
+      background: #2c2c2c;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .output strong {
+      color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <label>INITIAL BALANCE (IB):</label>
+      <input type="number" id="ib" value="25000">
+    </div>
+    <div class="row">
+      <label>CURRENT BALANCE (CB):</label>
+      <input type="number" id="cb" value="25000">
+    </div>
+    <div class="row">
+      <label>TRAILING DD (TDD):</label>
+      <input type="number" id="tdd" value="22500">
+    </div>
+    <div class="row">
+      <label>RISK %:</label>
+      <input type="number" id="riskPercent" value="10">
+    </div>
+
+    <div class="output">
+      <div><strong id="ddBuffer">$0</strong> Available DD</div>
+      <div><strong id="nextRisk">$0</strong> Next Risk</div>
+    </div>
+  </div>
+
+  <script>
+    const ib = document.getElementById("ib");
+    const cb = document.getElementById("cb");
+    const tdd = document.getElementById("tdd");
+    const riskPercent = document.getElementById("riskPercent");
+    const ddBuffer = document.getElementById("ddBuffer");
+    const nextRisk = document.getElementById("nextRisk");
+
+    function updateCalc() {
+      let cbVal = parseFloat(cb.value) || 0;
+      let tddVal = parseFloat(tdd.value) || 0;
+      let riskVal = parseFloat(riskPercent.value) / 100 || 0;
+
+      // Remaining buffer = CB – TDD
+      let buffer = cbVal - tddVal;
+      if (buffer < 0) buffer = 0;
+
+      // Next risk = risk % of remaining buffer
+      let riskAmt = buffer * riskVal;
+
+      ddBuffer.textContent = `$${buffer.toFixed(2)} Available DD`;
+      nextRisk.textContent = `$${riskAmt.toFixed(2)} Next Risk`;
+    }
+
+    [ib, cb, tdd, riskPercent].forEach(input => {
+      input.addEventListener("input", updateCalc);
+    });
+
+    updateCalc();
+  </script>
+</body>
+</html>
