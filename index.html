@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
   <title>Futures Prop Calculator</title>
   <style>
     body {
@@ -48,6 +48,14 @@
     .output strong {
       color: #4caf50;
     }
+    .projections {
+      margin-top: 15px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .projections div {
+      margin: 6px 0;
+    }
   </style>
 </head>
 <body>
@@ -73,6 +81,13 @@
       <div><strong id="ddBuffer">$0</strong> Available DD</div>
       <div><strong id="nextRisk">$0</strong> Next Risk</div>
     </div>
+
+    <div class="projections">
+      <div><strong>Risk Projection:</strong></div>
+      <div>Trade 1: <span id="trade1">$0</span></div>
+      <div>Trade 2: <span id="trade2">$0</span></div>
+      <div>Trade 3: <span id="trade3">$0</span></div>
+    </div>
   </div>
 
   <script>
@@ -82,6 +97,9 @@
     const riskPercent = document.getElementById("riskPercent");
     const ddBuffer = document.getElementById("ddBuffer");
     const nextRisk = document.getElementById("nextRisk");
+    const trade1 = document.getElementById("trade1");
+    const trade2 = document.getElementById("trade2");
+    const trade3 = document.getElementById("trade3");
 
     function updateCalc() {
       let cbVal = parseFloat(cb.value) || 0;
@@ -95,8 +113,19 @@
       // Next risk = risk % of remaining buffer
       let riskAmt = buffer * riskVal;
 
+      // Risk projection for 3 trades
+      let proj1 = riskAmt;
+      let proj2 = (buffer - proj1) * riskVal;
+      if (proj2 < 0) proj2 = 0;
+      let proj3 = (buffer - proj1 - proj2) * riskVal;
+      if (proj3 < 0) proj3 = 0;
+
+      // Update UI
       ddBuffer.textContent = `$${buffer.toFixed(2)} Available DD`;
       nextRisk.textContent = `$${riskAmt.toFixed(2)} Next Risk`;
+      trade1.textContent = `$${proj1.toFixed(2)}`;
+      trade2.textContent = `$${proj2.toFixed(2)}`;
+      trade3.textContent = `$${proj3.toFixed(2)}`;
     }
 
     [ib, cb, tdd, riskPercent].forEach(input => {
