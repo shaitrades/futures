@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FUTURES PROP CALCULATOR</title>
+  <title>ENIGMA CALCULATORS</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,6 +12,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
+      gap: 20px;
       min-height: 100vh;
       margin: 0;
       padding: 20px;
@@ -79,94 +80,127 @@
   </style>
 </head>
 <body>
+  <!-- CFD CALCULATOR -->
   <div class="container">
-    <h2>FUTURES PROP CALCULATOR</h2>
+    <h2>CFD PROP CALC</h2>
 
     <div class="row">
       <label>IB</label>
-      <input type="number" id="ib" value="25000">
+      <input type="number" id="cfdIb" value="25000">
     </div>
 
     <div class="row">
       <label>TDD</label>
-      <input type="number" id="tdd" value="2500">
+      <input type="number" id="cfdTdd" value="2500">
     </div>
 
     <div class="row">
       <label>RISK %</label>
-      <input type="number" id="riskPercent" value="10">
+      <input type="number" id="cfdRiskPercent" value="10">
     </div>
 
     <div class="row">
       <label>CB</label>
       <div class="cb-row">
-        <input type="number" id="cbManual" value="25000">
-        <input type="number" id="cbAmount" value="0">
-        <button class="btn btn-add" onclick="adjustCB(true)">+</button>
-        <button class="btn btn-sub" onclick="adjustCB(false)">–</button>
+        <input type="number" id="cfdCbManual" value="25000">
+        <input type="number" id="cfdCbAmount" value="0">
+        <button class="btn btn-add" onclick="adjustCB('cfd', true)">+</button>
+        <button class="btn btn-sub" onclick="adjustCB('cfd', false)">–</button>
       </div>
     </div>
 
     <div class="output">
-      <div class="output-row"><span>AVAILABLE DD:</span> <span id="availableDD">0</span></div>
-      <div class="output-row"><span>NEXT RISK:</span> <span id="nextRisk">0</span></div>
+      <div class="output-row"><span>AVAILABLE DD:</span> <span id="cfdAvailableDD">0</span></div>
+      <div class="output-row"><span>NEXT RISK:</span> <span id="cfdNextRisk">0</span></div>
       <div class="output-row"><strong>3-TRADE PROJECTION</strong></div>
-      <div class="output-row"><span>TRADE 1:</span> <span id="proj1">0</span></div>
-      <div class="output-row"><span>TRADE 2:</span> <span id="proj2">0</span></div>
-      <div class="output-row"><span>TRADE 3:</span> <span id="proj3">0</span></div>
+      <div class="output-row"><span>TRADE 1:</span> <span id="cfdProj1">0</span></div>
+      <div class="output-row"><span>TRADE 2:</span> <span id="cfdProj2">0</span></div>
+      <div class="output-row"><span>TRADE 3:</span> <span id="cfdProj3">0</span></div>
+    </div>
+  </div>
+
+  <!-- FUTURES CALCULATOR -->
+  <div class="container">
+    <h2>FUTURES PROP CALC</h2>
+
+    <div class="row">
+      <label>IB</label>
+      <input type="number" id="futIb" value="25000">
+    </div>
+
+    <div class="row">
+      <label>TDD</label>
+      <input type="number" id="futTdd" value="2500">
+    </div>
+
+    <div class="row">
+      <label>RISK %</label>
+      <input type="number" id="futRiskPercent" value="10">
+    </div>
+
+    <div class="row">
+      <label>CB</label>
+      <div class="cb-row">
+        <input type="number" id="futCbManual" value="25000">
+        <input type="number" id="futCbAmount" value="0">
+        <button class="btn btn-add" onclick="adjustCB('fut', true)">+</button>
+        <button class="btn btn-sub" onclick="adjustCB('fut', false)">–</button>
+      </div>
+    </div>
+
+    <div class="output">
+      <div class="output-row"><span>AVAILABLE DD:</span> <span id="futAvailableDD">0</span></div>
+      <div class="output-row"><span>NEXT RISK:</span> <span id="futNextRisk">0</span></div>
+      <div class="output-row"><strong>3-TRADE PROJECTION</strong></div>
+      <div class="output-row"><span>TRADE 1:</span> <span id="futProj1">0</span></div>
+      <div class="output-row"><span>TRADE 2:</span> <span id="futProj2">0</span></div>
+      <div class="output-row"><span>TRADE 3:</span> <span id="futProj3">0</span></div>
     </div>
   </div>
 
   <script>
-    const ibEl = document.getElementById('ib');
-    const tddEl = document.getElementById('tdd');
-    const riskEl = document.getElementById('riskPercent');
-    const cbEl = document.getElementById('cbManual');
-    const amountEl = document.getElementById('cbAmount');
+    function calculate(type) {
+      const ib = parseFloat(document.getElementById(type + 'Ib').value) || 0;
+      const tdd = parseFloat(document.getElementById(type + 'Tdd').value) || 0;
+      const cb = parseFloat(document.getElementById(type + 'CbManual').value) || 0;
+      const riskPercent = parseFloat(document.getElementById(type + 'RiskPercent').value) || 0;
 
-    const availableDDSpan = document.getElementById('availableDD');
-    const nextRiskSpan = document.getElementById('nextRisk');
-    const proj1 = document.getElementById('proj1');
-    const proj2 = document.getElementById('proj2');
-    const proj3 = document.getElementById('proj3');
+      let availableDD, nextRisk;
 
-    function calculate() {
-      const ib = parseFloat(ibEl.value) || 0;
-      const tdd = parseFloat(tddEl.value) || 0;
-      const cb = parseFloat(cbEl.value) || 0;
-      const riskPercent = parseFloat(riskEl.value) || 0;
-
-      // Futures Prop end-of-day logic
-      let availableDD = (cb + tdd) - ib;
-      if (availableDD < 0) availableDD = 0;
-
-      let nextRisk = (riskPercent / 100) * availableDD;
-
-      availableDDSpan.textContent = availableDD.toFixed(2);
-      nextRiskSpan.textContent = nextRisk.toFixed(2);
-
-      proj1.textContent = (cb - nextRisk).toFixed(2);
-      proj2.textContent = (cb - 2 * nextRisk).toFixed(2);
-      proj3.textContent = (cb - 3 * nextRisk).toFixed(2);
-    }
-
-    function adjustCB(isAdd) {
-      let cb = parseFloat(cbEl.value) || 0;
-      let amt = parseFloat(amountEl.value) || 0;
-      if (isAdd) {
-        cb += amt;
+      if (type === 'cfd') {
+        // CFD logic: remaining DD = TDD - (IB - CB)
+        let usedDD = Math.max(ib - cb, 0);
+        availableDD = Math.max(tdd - usedDD, 0);
       } else {
-        cb -= amt;
+        // Futures logic: end-of-day trailing DD
+        availableDD = (cb + tdd) - ib;
+        if (availableDD < 0) availableDD = 0;
       }
-      cbEl.value = cb.toFixed(2);
-      calculate();
+
+      nextRisk = (riskPercent / 100) * availableDD;
+
+      document.getElementById(type + 'AvailableDD').textContent = availableDD.toFixed(2);
+      document.getElementById(type + 'NextRisk').textContent = nextRisk.toFixed(2);
+
+      document.getElementById(type + 'Proj1').textContent = (cb - nextRisk).toFixed(2);
+      document.getElementById(type + 'Proj2').textContent = (cb - 2 * nextRisk).toFixed(2);
+      document.getElementById(type + 'Proj3').textContent = (cb - 3 * nextRisk).toFixed(2);
     }
 
-    [ibEl, tddEl, riskEl, cbEl].forEach(el => {
-      el.addEventListener('input', calculate);
-    });
+    function adjustCB(type, isAdd) {
+      let cb = parseFloat(document.getElementById(type + 'CbManual').value) || 0;
+      let amt = parseFloat(document.getElementById(type + 'CbAmount').value) || 0;
+      cb = isAdd ? cb + amt : cb - amt;
+      document.getElementById(type + 'CbManual').value = cb.toFixed(2);
+      calculate(type);
+    }
 
-    calculate();
+    ['cfd', 'fut'].forEach(type => {
+      ['Ib', 'Tdd', 'RiskPercent', 'CbManual'].forEach(id => {
+        document.getElementById(type + id).addEventListener('input', () => calculate(type));
+      });
+      calculate(type);
+    });
   </script>
 </body>
 </html>
