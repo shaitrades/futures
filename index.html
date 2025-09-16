@@ -21,38 +21,42 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 0 12px rgba(0,0,0,0.5);
-      width: 380px;
+      width: 400px;
     }
     h2 {
       text-align: center;
       margin-bottom: 15px;
       color: #00d4ff;
     }
-    label {
-      font-size: 14px;
-      margin-top: 10px;
-      display: block;
-    }
-    input {
-      padding: 8px;
-      font-size: 14px;
-      margin-top: 5px;
-      border: none;
-      border-radius: 6px;
-      width: 100%;
-      box-sizing: border-box;
-    }
     .row {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 10px;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+    .row label {
+      flex: 1;
+      font-size: 13px;
     }
     .row input {
+      flex: 1.2;
+      padding: 6px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .cb-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cb-row input {
       flex: 1;
+      padding: 6px;
     }
     .btn {
-      padding: 8px 12px;
+      padding: 6px 10px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -61,13 +65,15 @@
     .btn-add { background: #007bff; color: white; }
     .btn-sub { background: #555; color: white; }
     .output {
+      margin-top: 15px;
       background: #2c2c2c;
       padding: 12px;
       border-radius: 8px;
-      margin-top: 15px;
     }
-    .output p {
-      margin: 6px 0;
+    .output-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
       font-size: 14px;
     }
   </style>
@@ -76,30 +82,38 @@
   <div class="container">
     <h2>FUTURES PROP CALCULATOR</h2>
 
-    <label>INITIAL BALANCE (IB)</label>
-    <input type="number" id="ib" value="25000">
-
-    <label>TOTAL DRAWDOWN (TDD)</label>
-    <input type="number" id="tdd" value="2500">
-
-    <label>RISK % PER TRADE</label>
-    <input type="number" id="riskPercent" value="10">
-
-    <label>CURRENT BALANCE (CB)</label>
     <div class="row">
-      <input type="number" id="cbManual" value="25000">
-      <input type="number" id="cbAmount" value="0">
-      <button class="btn btn-add" onclick="adjustCB(true)">+</button>
-      <button class="btn btn-sub" onclick="adjustCB(false)">–</button>
+      <label>IB</label>
+      <input type="number" id="ib" value="25000">
+    </div>
+
+    <div class="row">
+      <label>TDD</label>
+      <input type="number" id="tdd" value="2500">
+    </div>
+
+    <div class="row">
+      <label>RISK %</label>
+      <input type="number" id="riskPercent" value="10">
+    </div>
+
+    <div class="row">
+      <label>CB</label>
+      <div class="cb-row">
+        <input type="number" id="cbManual" value="25000">
+        <input type="number" id="cbAmount" value="0">
+        <button class="btn btn-add" onclick="adjustCB(true)">+</button>
+        <button class="btn btn-sub" onclick="adjustCB(false)">–</button>
+      </div>
     </div>
 
     <div class="output">
-      <p><strong>AVAILABLE DD:</strong> <span id="availableDD">0</span></p>
-      <p><strong>NEXT RISK:</strong> <span id="nextRisk">0</span></p>
-      <p><strong>3-TRADE PROJECTION:</strong></p>
-      <p>Trade 1: <span id="proj1">0</span></p>
-      <p>Trade 2: <span id="proj2">0</span></p>
-      <p>Trade 3: <span id="proj3">0</span></p>
+      <div class="output-row"><span>AVAILABLE DD:</span> <span id="availableDD">0</span></div>
+      <div class="output-row"><span>NEXT RISK:</span> <span id="nextRisk">0</span></div>
+      <div class="output-row"><strong>3-TRADE PROJECTION</strong></div>
+      <div class="output-row"><span>TRADE 1:</span> <span id="proj1">0</span></div>
+      <div class="output-row"><span>TRADE 2:</span> <span id="proj2">0</span></div>
+      <div class="output-row"><span>TRADE 3:</span> <span id="proj3">0</span></div>
     </div>
   </div>
 
@@ -122,7 +136,8 @@
       const cb = parseFloat(cbEl.value) || 0;
       const riskPercent = parseFloat(riskEl.value) || 0;
 
-      let availableDD = (cb + tdd) - ib; 
+      // Futures Prop end-of-day logic
+      let availableDD = (cb + tdd) - ib;
       if (availableDD < 0) availableDD = 0;
 
       let nextRisk = (riskPercent / 100) * availableDD;
