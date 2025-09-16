@@ -2,253 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
-  <title>ENIGMA Dual Calculators</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FUTURES PROP CALCULATOR</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #000;
+      font-family: Arial, sans-serif;
+      background: #121212;
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      gap: 20px;
-      flex-wrap: wrap;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
     .container {
-      width: 360px;
-      background: #1c1c1e;
-      border-radius: 25px;
+      background: #1e1e1e;
       padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.5);
+      width: 380px;
     }
-    .title {
+    h2 {
       text-align: center;
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: #f5f5f7;
+      margin-bottom: 15px;
+      color: #00d4ff;
+    }
+    label {
+      font-size: 14px;
+      margin-top: 10px;
+      display: block;
+    }
+    input {
+      padding: 8px;
+      font-size: 14px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 6px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin: 12px 0;
+      gap: 6px;
+      margin-top: 10px;
     }
-    label {
-      font-size: 15px;
-      color: #f5f5f7;
+    .row input {
       flex: 1;
     }
-    input {
-      flex: 1.2;
-      padding: 10px;
-      font-size: 16px;
+    .btn {
+      padding: 8px 12px;
       border: none;
-      border-radius: 12px;
-      background: #2c2c2e;
-      color: #fff;
-      text-align: right;
-      outline: none;
-      -moz-appearance: textfield;
-    }
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    .adjust-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .adjust-row button {
-      flex: 0.6;
-      margin: 0 5px;
-      height: 45px;
-      font-size: 20px;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      background: #ff9500;
-      color: white;
+      border-radius: 6px;
       cursor: pointer;
-      transition: 0.2s;
+      font-weight: bold;
     }
-    .adjust-row button:hover { opacity: 0.9; }
-    .adjust-row input {
-      flex: 1;
-      margin-left: 10px;
+    .btn-add { background: #007bff; color: white; }
+    .btn-sub { background: #555; color: white; }
+    .output {
+      background: #2c2c2c;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
     }
-    .result, .output {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 600;
-      background: #2c2c2e;
-      padding: 15px;
-      border-radius: 18px;
-    }
-    .result span, .output strong {
-      color: #34c759;
-    }
-    .projection {
-      margin-top: 20px;
-      padding: 15px;
-      background: #2c2c2e;
-      border-radius: 18px;
-    }
-    .projection h3 {
-      text-align: center;
-      margin: 0 0 12px 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: #f5f5f7;
-    }
-    .projection p {
+    .output p {
       margin: 6px 0;
-      font-size: 16px;
-      text-align: center;
-      color: #ffcc00;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-
-  <!-- Futures Prop Calculator -->
   <div class="container">
-    <div class="title">Futures Prop Calc</div>
+    <h2>FUTURES PROP CALCULATOR</h2>
 
+    <label>INITIAL BALANCE (IB)</label>
+    <input type="number" id="ib" value="25000">
+
+    <label>TOTAL DRAWDOWN (TDD)</label>
+    <input type="number" id="tdd" value="2500">
+
+    <label>RISK % PER TRADE</label>
+    <input type="number" id="riskPercent" value="10">
+
+    <label>CURRENT BALANCE (CB)</label>
     <div class="row">
-      <label>INITIAL BALANCE (IB)</label>
-      <input type="number" id="ib" value="25000">
-    </div>
-    <div class="row">
-      <label>CURRENT BALANCE (CB)</label>
-      <input type="number" id="cb" value="25000">
-    </div>
-    <div class="row">
-      <label>TRAILING DD (TDD)</label>
-      <input type="number" id="tdd" value="22500">
-    </div>
-    <div class="row">
-      <label>RISK %</label>
-      <input type="number" id="riskPercent1" value="10">
+      <input type="number" id="cbManual" value="25000">
+      <input type="number" id="cbAmount" value="0">
+      <button class="btn btn-add" onclick="adjustCB(true)">+</button>
+      <button class="btn btn-sub" onclick="adjustCB(false)">–</button>
     </div>
 
     <div class="output">
-      <div><strong id="ddBuffer">$0</strong> Available DD</div>
-      <div><strong id="nextRisk">$0</strong> Next Risk</div>
-    </div>
-
-    <div class="projection">
-      <h3>Projection (3 Trades)</h3>
-      <div>Trade 1: <span id="trade1">$0</span></div>
-      <div>Trade 2: <span id="trade2">$0</span></div>
-      <div>Trade 3: <span id="trade3">$0</span></div>
-    </div>
-  </div>
-
-  <!-- ENIGMA Projection Calculator -->
-  <div class="container">
-    <div class="title">ENIGMA Projection Calc</div>
-
-    <div class="row">
-      <label>Initial Balance</label>
-      <input type="number" id="initialBalance" value="1000">
-    </div>
-    <div class="row">
-      <label>Current Balance</label>
-      <input type="number" id="currentBalance" value="1000">
-    </div>
-    <div class="row adjust-row">
-      <button onclick="adjustBalance(true)">+</button>
-      <button onclick="adjustBalance(false)">−</button>
-      <input type="number" id="adjustAmount" value="0">
-    </div>
-    <div class="row">
-      <label>Total DD</label>
-      <input type="number" id="totalDD" value="100">
-    </div>
-    <div class="row">
-      <label>Risk %</label>
-      <input type="number" id="riskPercent2" value="1">
-    </div>
-
-    <div class="result">
-      Next Risk: <span id="nextRisk2">0</span>
-    </div>
-
-    <div class="projection">
-      <h3>Projection (Losing Streak)</h3>
-      <div id="projectionList"></div>
+      <p><strong>AVAILABLE DD:</strong> <span id="availableDD">0</span></p>
+      <p><strong>NEXT RISK:</strong> <span id="nextRisk">0</span></p>
+      <p><strong>3-TRADE PROJECTION:</strong></p>
+      <p>Trade 1: <span id="proj1">0</span></p>
+      <p>Trade 2: <span id="proj2">0</span></p>
+      <p>Trade 3: <span id="proj3">0</span></p>
     </div>
   </div>
 
   <script>
-    // --- Futures Prop Calculator Logic ---
-    function updateFuturesCalc() {
-      let cbVal = parseFloat(document.getElementById("cb").value) || 0;
-      let tddVal = parseFloat(document.getElementById("tdd").value) || 0;
-      let riskVal = parseFloat(document.getElementById("riskPercent1").value) / 100 || 0;
+    const ibEl = document.getElementById('ib');
+    const tddEl = document.getElementById('tdd');
+    const riskEl = document.getElementById('riskPercent');
+    const cbEl = document.getElementById('cbManual');
+    const amountEl = document.getElementById('cbAmount');
 
-      let buffer = cbVal - tddVal;
-      if (buffer < 0) buffer = 0;
+    const availableDDSpan = document.getElementById('availableDD');
+    const nextRiskSpan = document.getElementById('nextRisk');
+    const proj1 = document.getElementById('proj1');
+    const proj2 = document.getElementById('proj2');
+    const proj3 = document.getElementById('proj3');
 
-      let riskAmt = buffer * riskVal;
+    function calculate() {
+      const ib = parseFloat(ibEl.value) || 0;
+      const tdd = parseFloat(tddEl.value) || 0;
+      const cb = parseFloat(cbEl.value) || 0;
+      const riskPercent = parseFloat(riskEl.value) || 0;
 
-      let proj1 = riskAmt;
-      let proj2 = (buffer - proj1) * riskVal;
-      if (proj2 < 0) proj2 = 0;
-      let proj3 = (buffer - proj1 - proj2) * riskVal;
-      if (proj3 < 0) proj3 = 0;
+      let availableDD = (cb + tdd) - ib; 
+      if (availableDD < 0) availableDD = 0;
 
-      document.getElementById("ddBuffer").textContent = `$${buffer.toFixed(2)}`;
-      document.getElementById("nextRisk").textContent = `$${riskAmt.toFixed(2)}`;
-      document.getElementById("trade1").textContent = `$${proj1.toFixed(2)}`;
-      document.getElementById("trade2").textContent = `$${proj2.toFixed(2)}`;
-      document.getElementById("trade3").textContent = `$${proj3.toFixed(2)}`;
-    }
-    ["ib","cb","tdd","riskPercent1"].forEach(id => {
-      document.getElementById(id).addEventListener("input", updateFuturesCalc);
-    });
-    updateFuturesCalc();
+      let nextRisk = (riskPercent / 100) * availableDD;
 
-    // --- ENIGMA Projection Calculator Logic ---
-    function adjustBalance(add) {
-      let amt = parseFloat(document.getElementById("adjustAmount").value) || 0;
-      let cb = parseFloat(document.getElementById("currentBalance").value) || 0;
-      document.getElementById("currentBalance").value = add ? cb + amt : cb - amt;
-      updateEnigmaProjection();
+      availableDDSpan.textContent = availableDD.toFixed(2);
+      nextRiskSpan.textContent = nextRisk.toFixed(2);
+
+      proj1.textContent = (cb - nextRisk).toFixed(2);
+      proj2.textContent = (cb - 2 * nextRisk).toFixed(2);
+      proj3.textContent = (cb - 3 * nextRisk).toFixed(2);
     }
 
-    function updateEnigmaProjection() {
-      let ib = parseFloat(document.getElementById("initialBalance").value) || 0;
-      let cb = parseFloat(document.getElementById("currentBalance").value) || 0;
-      let tdd = parseFloat(document.getElementById("totalDD").value) || 0;
-      let riskPct = parseFloat(document.getElementById("riskPercent2").value) / 100 || 0;
-
-      let usedDD = Math.max(ib - cb, 0);
-      let remainingDD = Math.max(tdd - usedDD, 0);
-      let nextRisk = remainingDD * riskPct;
-
-      document.getElementById("nextRisk2").innerText = nextRisk.toFixed(2);
-
-      let projectionHTML = "";
-      let tempRemainingDD = remainingDD;
-      for (let i = 1; i <= 3; i++) {
-        let projRisk = tempRemainingDD * riskPct;
-        if (projRisk <= 0) break;
-        projectionHTML += `<p>Trade ${i}: ${projRisk.toFixed(2)}</p>`;
-        tempRemainingDD -= projRisk;
+    function adjustCB(isAdd) {
+      let cb = parseFloat(cbEl.value) || 0;
+      let amt = parseFloat(amountEl.value) || 0;
+      if (isAdd) {
+        cb += amt;
+      } else {
+        cb -= amt;
       }
-      document.getElementById("projectionList").innerHTML = projectionHTML;
+      cbEl.value = cb.toFixed(2);
+      calculate();
     }
-    document.querySelectorAll("#initialBalance, #currentBalance, #totalDD, #riskPercent2")
-      .forEach(input => input.addEventListener("input", updateEnigmaProjection));
-    updateEnigmaProjection();
+
+    [ibEl, tddEl, riskEl, cbEl].forEach(el => {
+      el.addEventListener('input', calculate);
+    });
+
+    calculate();
   </script>
 </body>
 </html>
